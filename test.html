@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Cámara</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: transparent; }
+        #log { position: fixed; top: 10px; left: 10px; z-index: 9999; background: white; padding: 10px; color: black; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="log">1. Esperando cámara...</div>
+
+    <a-scene mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.2/examples/image-tracking/assets/card-example/card.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-entity mindar-image-target="targetIndex: 0">
+            <a-box position="0 0 0" scale="0.5 0.5 0.5" color="red"></a-box>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        const scene = document.querySelector('a-scene');
+        const log = document.getElementById('log');
+
+        scene.addEventListener('arReady', () => {
+            log.innerText = "✅ CÁMARA ENCENDIDA CON ÉXITO";
+            log.style.color = "green";
+        });
+
+        scene.addEventListener('arError', (event) => {
+            log.innerText = "❌ ERROR: El navegador bloqueó la cámara";
+            log.style.color = "red";
+        });
+    </script>
+</body>
+</html>
