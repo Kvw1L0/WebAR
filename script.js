@@ -1,4 +1,4 @@
-// --- SISTEMA DE COLECCIÓN DE GEMAS ---
+// --- SISTEMA DE COLECCIÓN ---
 function collectGem(index) {
     let gems = JSON.parse(localStorage.getItem('myGems') || "[]");
     if (!gems.includes(index)) {
@@ -15,14 +15,16 @@ function isGemCollected(index) {
 function updateInventoryUI() {
     let gems = JSON.parse(localStorage.getItem('myGems') || "[]");
     const progressText = document.getElementById('progress-text');
-    if (progressText) progressText.innerText = `${gems.length}/3`;
+    if (progressText) progressText.innerText = `${gems.length}/4`;
 
     gems.forEach(index => {
         const slot = document.getElementById(`gem-${index}`);
         if(slot) {
-            slot.classList.add('unlocked');
-            slot.querySelector('span').innerText = '💎';
-            slot.querySelector('p').innerText = 'ACTIVADA';
+            const img = slot.querySelector('img');
+            img.classList.remove('locked');
+            img.classList.add('unlocked');
+            slot.style.border = "2px solid #ec0000";
+            slot.style.background = "rgba(255,255,255,0.9)";
         }
     });
 }
@@ -35,56 +37,39 @@ const Config = {
 };
 
 const Batiphone = {
-    active: false,
-    beats: 0,
-    startTime: 0,
-    playerName: "",
-    lastX: 0, lastY: 0, lastZ: 0,
-    currentGemIndex: null,
+    active: false, beats: 0, startTime: 0, playerName: "",
+    lastX: 0, lastY: 0, lastZ: 0, currentGemIndex: null,
 
     init: function(gemIndex) {
         this.currentGemIndex = gemIndex;
-        const overlay = document.getElementById('game-overlay');
-        overlay.classList.remove('hidden');
-        
+        document.getElementById('game-overlay').classList.remove('hidden');
         document.getElementById("screen-start").style.display = "flex";
         document.getElementById("screen-result").classList.add("hidden");
         document.getElementById("game-container").style.display = "none";
-        
         document.getElementById('btn-play').onclick = () => this.start();
     },
 
     start: async function() {
         const nameInpt = document.getElementById("player-name");
-        const name = nameInpt.value.trim();
-        
-        if(!name) {
-            nameInpt.style.border = "2px solid red";
-            return alert("¡Necesitamos tu nombre, agente!");
-        }
+        if(!nameInpt.value.trim()) return alert("¡Necesitamos tu nombre!");
         
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             try {
                 const response = await DeviceMotionEvent.requestPermission();
-                if (response !== 'granted') alert("Permiso denegado. Toca la pantalla para avanzar.");
+                if (response !== 'granted') alert("Permiso denegado. Toca la pantalla.");
             } catch (e) { console.error(e); }
         }
 
-        this.playerName = name;
-        this.active = true;
-        this.startTime = Date.now();
-        this.beats = 0;
+        this.playerName = nameInpt.value.trim();
+        this.active = true; this.startTime = Date.now(); this.beats = 0;
         this.lastX = 0; this.lastY = 0; this.lastZ = 0;
 
         document.getElementById("screen-start").style.display = "none";
         document.getElementById("game-container").style.display = "block";
-        
         this.updateVisuals(0);
 
         this.motionListener = this.handleMotion.bind(this);
         window.addEventListener("devicemotion", this.motionListener);
-        
-        if(navigator.vibrate) navigator.vibrate(100);
     },
 
     handleMotion: function(event) {
@@ -135,39 +120,29 @@ const Batiphone = {
         if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
         this.sendData(totalTime);
 
-        // --- EFECTO ZELDA AL RECOLECTAR ---
+        // --- REVELAR IMAGEN REAL DE LA GEMA ---
         document.getElementById('btn-claim-gem').onclick = () => {
             const index = this.currentGemIndex;
-            
-            // Ocultar Batiphone
             document.getElementById('game-overlay').classList.add('hidden');
             
-            // Mostrar animación épica
-            const zeldaOverlay = document.getElementById('zelda-overlay');
-            const zeldaMessage = document.getElementById('zelda-message');
-            const gemNames = ["AGILIDAD", "PROSPERIDAD", "SUSTENTABILIDAD"];
-            zeldaMessage.innerHTML = `¡OBTUVISTE LA GEMA<br>DE LA ${gemNames[index]}!`;
+            // Inyectar la imagen correcta (gema1.png, gema2.png, etc.)
+            const zeldaImg = document.getElementById('zelda-gem-img');
+            zeldaImg.src = `gema${index + 1}.png`; 
             
+            const zeldaOverlay = document.getElementById('zelda-overlay');
             zeldaOverlay.classList.remove('hidden');
-            // Opcional: Descomentar si agregas audio
-            // const zAudio = document.getElementById('zelda-sound');
-            // if(zAudio) zAudio.play().catch(e=>console.log(e));
 
-            // Guardar progreso y redirigir al inventario tras la gloria
+            // Volver al inicio
             setTimeout(() => {
                 collectGem(index);
                 window.location.href = 'index.html'; 
-            }, 4500); 
+            }, 4000); 
         };
     },
 
     sendData: function(time) {
         if(!Config.webhookUrl) return;
-        fetch(Config.webhookUrl, {
-            method: "POST", mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: this.playerName, time: time })
-        }).catch(console.error);
+        fetch(Config.webhookUrl, { method: "POST", mode: "no-cors", body: JSON.stringify({ name: this.playerName, time: time }) }).catch(e=>e);
     },
 
     launchRainConfetti: function() {
