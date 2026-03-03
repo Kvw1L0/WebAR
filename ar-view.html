@@ -6,11 +6,17 @@
     <title>Escáner AR - Gema Quest</title>
     
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     
+    <script>
+        // Esto engaña al sistema de partículas para que use la versión moderna del motor 3D
+        if (typeof THREE !== 'undefined' && !THREE.Math) {
+            THREE.Math = THREE.MathUtils;
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-particle-system-component@1.1.3/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <link rel="stylesheet" href="style.css">
 
     <style>
