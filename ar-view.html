@@ -12,6 +12,21 @@
         if (typeof THREE !== 'undefined' && !THREE.Math) {
             THREE.Math = THREE.MathUtils;
         }
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    
+    <script>
+        if (typeof THREE !== 'undefined') {
+            // Parche 1: Para el error generateUUID
+            if (!THREE.Math) {
+                THREE.Math = THREE.MathUtils;
+            }
+            // Parche 2: Para el error addAttribute is not a function
+            if (THREE.BufferGeometry && !THREE.BufferGeometry.prototype.addAttribute) {
+                THREE.BufferGeometry.prototype.addAttribute = function (name, attribute) {
+                    return this.setAttribute(name, attribute);
+                };
+            }
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
