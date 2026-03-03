@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escáner AR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Escáner AR - Gema Quest</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-particle-system-component@1.1.3/dist/aframe-particle-system-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body style="margin: 0; overflow: hidden;">
@@ -20,20 +21,32 @@
     <button class="back-btn" onclick="location.href='index.html'">✕ Salir</button>
 
     <div id="game-overlay" class="hidden">
-        <div class="modal">
-            <h2>¡Gema Localizada!</h2>
-            <p>Sincroniza la energía tocando los puntos rápidamente.</p>
-            <div id="game-area"><button id="tap-target"></button></div>
-            <div id="progress-bar"><div id="progress-fill"></div></div>
-        </div>
-    </div>
-
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; maxTrack: 1" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         
+        <div id="screen-start" class="game-screen">
+            <h1 class="game-title">¡BATIPHONE!</h1>
+            <p>Escribe tu nombre y agita el teléfono para sincronizar la gema.</p>
+            <input type="text" id="player-name" placeholder="Tu Nombre">
+            <button id="btn-play">¡JUGAR!</button>
+        </div>
+
+        <div id="game-container" class="logo-wrapper" onclick="Batiphone.simulateShake()" style="display: none;">
+            <img src="logo.png" class="logo-img ghost" alt="Logo Ghost">
+            <img src="logo.png" id="full-image" class="logo-img full-color" alt="Logo Color">
+            <p id="hint-text" class="tap-hint">¡AGITA EL TELÉFONO!</p>
+        </div>
+
+        <div id="screen-result" class="game-screen hidden">
+            <h1 class="game-title">¡Misión Cumplida!</h1>
+            <p>Tiempo de sincronización:</p>
+            <p class="big-text" id="final-time">0.00s</p>
+            <button id="btn-claim-gem">RECOLECTAR GEMA</button>
+        </div>
+
+        <canvas id="confetti-canvas"></canvas>
+    </div>
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; maxTrack: 1" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         <a-assets>
             <a-asset-item id="gema-glb" src="crear3D.glb"></a-asset-item>
-            <audio id="soundPop" src="pop.mp3" preload="auto"></audio>
-            <audio id="soundVictory" src="victory.mp3" preload="auto"></audio>
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -58,7 +71,6 @@
 
     <script src="script.js"></script>
     <script>
-        // Ocultar cargador cuando la cámara y la escena estén listas
         document.querySelector('a-scene').addEventListener('renderstart', () => {
             setTimeout(() => {
                 const loader = document.getElementById('loading-overlay');
@@ -67,20 +79,10 @@
             }, 1000);
         });
 
-        // Eventos de detección de los pórticos
         document.querySelectorAll('a-entity[mindar-image-target]').forEach((el, index) => {
             el.addEventListener("targetFound", () => {
                 if(!isGemCollected(index)) {
-                    document.getElementById('game-overlay').classList.remove('hidden');
-                    iniciarMiniJuego(() => {
-                        collectGem(index);
-                        const effect = document.getElementById(`effect${index}`);
-                        effect.setAttribute('particle-system', 'enabled', true);
-                        setTimeout(() => {
-                            effect.setAttribute('particle-system', 'enabled', false);
-                            document.getElementById('game-overlay').classList.add('hidden');
-                        }, 1200);
-                    });
+                    Batiphone.init(index);
                 }
             });
         });
