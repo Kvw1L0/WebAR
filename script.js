@@ -30,7 +30,7 @@ function updateInventoryUI() {
 // --- LÓGICA DEL MINIJUEGO BATIPHONE ---
 const Config = {
     webhookUrl: "https://script.google.com/macros/s/AKfycbxDe-9KMaNos7YfBJIJCCiBDTM2yFsM2JXM3GxizRQbyFy-VEfuJjJv0nqlVu_I-nY7Gw/exec", 
-    targetBeats: 200, // Ajustado para que sea rápido en un evento BTL
+    targetBeats: 200, 
     shakeThreshold: 20
 };
 
@@ -66,9 +66,7 @@ const Batiphone = {
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             try {
                 const response = await DeviceMotionEvent.requestPermission();
-                if (response !== 'granted') {
-                    alert("Permiso denegado. Toca la pantalla para avanzar.");
-                }
+                if (response !== 'granted') alert("Permiso denegado. Toca la pantalla para avanzar.");
             } catch (e) { console.error(e); }
         }
 
@@ -97,27 +95,20 @@ const Batiphone = {
         const deltaX = Math.abs((acc.x || 0) - this.lastX);
         const deltaY = Math.abs((acc.y || 0) - this.lastY);
         const deltaZ = Math.abs((acc.z || 0) - this.lastZ);
-        const speed = deltaX + deltaY + deltaZ;
+        if ((deltaX + deltaY + deltaZ) > Config.shakeThreshold) this.addBeat();
 
-        if (speed > Config.shakeThreshold) this.addBeat();
-
-        this.lastX = acc.x || 0;
-        this.lastY = acc.y || 0;
-        this.lastZ = acc.z || 0;
+        this.lastX = acc.x || 0; this.lastY = acc.y || 0; this.lastZ = acc.z || 0;
     },
 
     simulateShake: function() {
         if (!this.active) return;
-        for(let i=0; i<15; i++) this.addBeat(); // Respaldo manual si falla el sensor
+        for(let i=0; i<15; i++) this.addBeat(); 
     },
 
     addBeat: function() {
         this.beats++;
-        const percentage = Math.min((this.beats / Config.targetBeats) * 100, 100);
-        this.updateVisuals(percentage);
-
+        this.updateVisuals(Math.min((this.beats / Config.targetBeats) * 100, 100));
         if(this.beats % 10 === 0 && navigator.vibrate) navigator.vibrate(20);
-
         if (this.beats >= Config.targetBeats) this.finish();
     },
 
@@ -144,19 +135,29 @@ const Batiphone = {
         if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
         this.sendData(totalTime);
 
-        // Recolección y cierre
+        // --- EFECTO ZELDA AL RECOLECTAR ---
         document.getElementById('btn-claim-gem').onclick = () => {
             const index = this.currentGemIndex;
-            collectGem(index);
             
+            // Ocultar Batiphone
             document.getElementById('game-overlay').classList.add('hidden');
             
-            // Activar partículas en la gema 3D
-            const effect = document.getElementById(`effect${index}`);
-            if(effect) {
-                effect.setAttribute('particle-system', 'enabled', true);
-                setTimeout(() => effect.setAttribute('particle-system', 'enabled', false), 1500);
-            }
+            // Mostrar animación épica
+            const zeldaOverlay = document.getElementById('zelda-overlay');
+            const zeldaMessage = document.getElementById('zelda-message');
+            const gemNames = ["AGILIDAD", "PROSPERIDAD", "SUSTENTABILIDAD"];
+            zeldaMessage.innerHTML = `¡OBTUVISTE LA GEMA<br>DE LA ${gemNames[index]}!`;
+            
+            zeldaOverlay.classList.remove('hidden');
+            // Opcional: Descomentar si agregas audio
+            // const zAudio = document.getElementById('zelda-sound');
+            // if(zAudio) zAudio.play().catch(e=>console.log(e));
+
+            // Guardar progreso y redirigir al inventario tras la gloria
+            setTimeout(() => {
+                collectGem(index);
+                window.location.href = 'index.html'; 
+            }, 4500); 
         };
     },
 
@@ -174,9 +175,8 @@ const Batiphone = {
         if(!canvas) return;
         const myConfetti = confetti.create(canvas, { resize: true });
         const end = Date.now() + 3000;
-
         (function frame() {
-            myConfetti({ particleCount: 5, angle: 270, spread: 180, origin: { x: Math.random(), y: -0.1 }, colors: ['#E53935', '#ffffff', '#FFD700'], scalar: 1.2 });
+            myConfetti({ particleCount: 5, angle: 270, spread: 180, origin: { x: Math.random(), y: -0.1 }, colors: ['#ec0000', '#ffffff', '#FFD700'], scalar: 1.2 });
             if (Date.now() < end) requestAnimationFrame(frame);
         }());
     }
