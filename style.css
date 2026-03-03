@@ -1,0 +1,29 @@
+:root { --brand-color: #ec0000; --bg: #fdfdfd; }
+body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
+
+/* Dashboard */
+#app { padding: 30px 20px; text-align: center; max-width: 400px; margin: auto; }
+.logo-placeholder { font-weight: 900; font-size: 26px; color: var(--brand-color); letter-spacing: -1px; margin-bottom: 20px; }
+.inventory { display: flex; justify-content: space-around; margin: 30px 0; }
+.gem-slot { width: 90px; height: 110px; background: #eee; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; transition: 0.3s; color: #999; }
+.gem-slot.unlocked { background: white; border: 2px solid var(--brand-color); color: var(--brand-color); box-shadow: 0 4px 10px rgba(236, 0, 0, 0.15); }
+.gem-slot span { font-size: 26px; margin-bottom: 5px; }
+.status-bar { font-weight: bold; margin-bottom: 25px; }
+#start-ar { background: var(--brand-color); color: white; border: none; padding: 18px 40px; border-radius: 50px; font-weight: bold; font-size: 16px; width: 100%; cursor: pointer; box-shadow: 0 4px 12px rgba(236, 0, 0, 0.3); }
+
+/* Cargador AR */
+#loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+.spinner { width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid var(--brand-color); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#loading-text { font-weight: bold; color: var(--brand-color); letter-spacing: 1px; }
+
+/* Modal Minijuego */
+#game-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.modal { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; }
+#game-area { height: 200px; position: relative; background: #f0f0f0; margin: 20px 0; border-radius: 15px; overflow: hidden; border: 2px solid #ddd; }
+#tap-target { position: absolute; width: 50px; height: 50px; background: var(--brand-color); border: 3px solid white; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(236, 0, 0, 0.5); outline: none; }
+#progress-bar { height: 12px; background: #eee; border-radius: 6px; overflow: hidden; }
+#progress-fill { height: 100%; background: var(--brand-color); width: 0%; transition: width 0.2s ease; }
+
+.hidden { display: none !important; }
+.back-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; background: white; color: #333; border: none; padding: 10px 18px; border-radius: 20px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; }
