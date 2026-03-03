@@ -3,22 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GemaS DE LOS SUEÑOSr</title>
+    <title>Gemas del Soñador</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app">
         <header>
             <div class="logo-placeholder">SANTANDER</div>
-            <h1>Gema Quest</h1>
-            <p>Explora los portales en el evento y recolecta las 4 gemas del soñador.</p>
+            <h1>Gemas del Soñador</h1>
+            <p>Escanea los portales, supera los desafios y desbloquea las gemas del soñador.</p>
         </header>
 
         <div class="inventory">
-            <div class="gem-slot" id="gem-0"><span>?</span><p>IMAGINAR</p></div>
-            <div class="gem-slot" id="gem-1"><span>?</span><p>CREER</p></div>
-            <div class="gem-slot" id="gem-2"><span>?</span><p>CONSTRUIR</p></div>
-            <div class="gem-slot" id="gem-3"><span>?</span><p>AVANZAR</p></div>
+            <div class="gem-slot" id="gem-0">
+                <img src="gema1.png" class="gem-img locked" alt="Gema 1">
+            </div>
+            <div class="gem-slot" id="gem-1">
+                <img src="gema2.png" class="gem-img locked" alt="Gema 2">
+            </div>
+            <div class="gem-slot" id="gem-2">
+                <img src="gema3.png" class="gem-img locked" alt="Gema 3">
+            </div>
+            <div class="gem-slot" id="gem-3">
+                <img src="gema4.png" class="gem-img locked" alt="Gema 4">
+            </div>
         </div>
 
         <div class="status-bar">
@@ -26,7 +34,7 @@
         </div>
 
         <button id="start-ar" onclick="location.href='ar-view.html'">
-            ✨ EXPLORA EL PORTAL
+            ✨ ESCANEAR PORTAL
         </button>
     </div>
     <script src="script.js"></script>
