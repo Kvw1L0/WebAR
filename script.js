@@ -1,4 +1,4 @@
-// Guardar progreso
+// --- SISTEMA DE COLECCIÓN ---
 function collectGem(index) {
     let gems = JSON.parse(localStorage.getItem('myGems') || "[]");
     if (!gems.includes(index)) {
@@ -12,7 +12,6 @@ function isGemCollected(index) {
     return gems.includes(index);
 }
 
-// Actualizar la interfaz principal
 function updateInventoryUI() {
     let gems = JSON.parse(localStorage.getItem('myGems') || "[]");
     const progressText = document.getElementById('progress-text');
@@ -28,31 +27,43 @@ function updateInventoryUI() {
     });
 }
 
-// Minijuego de reacción
+// --- MINIJUEGO DE REACCIÓN ---
 let taps = 0;
 function iniciarMiniJuego(onWin) {
     taps = 0;
     const btn = document.getElementById('tap-target');
     const fill = document.getElementById('progress-fill');
+    const audioPop = document.getElementById('soundPop');
+    const audioVictory = document.getElementById('soundVictory');
+    
     fill.style.width = '0%';
     btn.style.display = 'block';
     
     const moverBoton = () => {
         const area = document.getElementById('game-area');
-        const x = Math.random() * (area.clientWidth - 60);
-        const y = Math.random() * (area.clientHeight - 60);
+        const x = Math.random() * (area.clientWidth - 50);
+        const y = Math.random() * (area.clientHeight - 50);
         btn.style.left = `${x}px`;
         btn.style.top = `${y}px`;
     };
     
     moverBoton();
+
     btn.onclick = (e) => {
         e.stopPropagation();
+        
+        if (audioPop) {
+            audioPop.currentTime = 0;
+            audioPop.play().catch(() => {});
+        }
+
         taps++;
         fill.style.width = `${(taps / 5) * 100}%`;
-        if(taps < 5) {
+        
+        if (taps < 5) {
             moverBoton();
         } else {
+            if (audioVictory) audioVictory.play().catch(() => {});
             btn.style.display = 'none';
             onWin();
         }
